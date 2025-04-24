@@ -1,0 +1,11 @@
+name = "my first workflow"
+on:pull
+jobs:
+  first_jobs:
+    runs-on: ubuntu:latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name : Welcome page
+          run: echo "my first page"
