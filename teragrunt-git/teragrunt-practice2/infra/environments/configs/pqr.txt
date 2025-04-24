@@ -1,0 +1,116 @@
+# environments/terragrunt.hcl
+
+# This makes Terragrunt look into the "configs" directory
+
+
+/*
+terraform {
+    #source = "git::git@github.com:foo/modules.git//frontend-app?ref=v0.0.3"
+
+    extra_arguments "custom_vars" {
+      commands = [
+        "apply",
+        "plan",
+        "import",
+        "push",
+        "refresh"
+      ]
+
+      # With the get_terragrunt_dir() function, you can use relative paths!
+      arguments = [
+        "-var-file=${get_terragrunt_dir()}/configs/vpc-terragrunt.hcl",
+        "-var-file=vpc-terragrunt.hcl"
+      ]
+    }
+  }
+*/
+include "vpc-enviourmtne" {
+  path = "configs/vpc-terragrunt.hcl"
+}
+
+
+
+
+locals {
+  vpc_config = read_terragrunt_config("${get_terragrunt_dir()}/configs/vpc-terragrunt.hcl")
+
+    # Add any other locals here in the same block
+  #another_local = "value"
+}
+
+inputs = merge(
+  local.vpc_config.inputs,
+  {
+    env    = "prod"
+    region = "us-east-1"
+    name   = "prod_env"
+  }
+)
+
+
+remote_state {
+  backend = "s3"
+  config = {
+    bucket         = "lokesh-121213"
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "LockID"
+  }
+}
+
+
+\\
+#/enviourments/configs/vpc-terragrunt.hcl
+/*
+terraform {
+  source = "/home/aumni/teragrunt-practice2/infra/modules/vpc"
+}
+
+
+locals {
+  root_config = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
+  region      = local.root_config.inputs != null ? local.root_config.inputs.region : "us-east-1"
+  env         = local.root_config.inputs != null ? local.root_config.inputs.env : "dev"
+}
+*/
+
+/*
+locals {
+  vpc_name = "my-vpc"
+  vpc_cidr = "10.0.0.0/16"
+}
+
+inputs = {
+  vpc_cidr             = "10.1.0.0/16"
+  public_subnet_cidrs  = ["10.1.1.0/24", "10.1.2.0/24"]
+  private_subnet_cidrs = ["10.1.3.0/24", "10.1.4.0/24"]
+  availability_zone    = ["us-east-1a", "us-east-1b"]
+  region               = local.region
+  env                  = local.env
+}
+
+
+
+*/
+
+# ./environments/configs/vpc-terragrunt.hcl
+terraform {
+  source = "../../../modules/vpc"
+}
+
+include {
+  path = find_in_parent_folders()
+}
+
+inputs = {
+  region          = local.region
+  vpc_cidr        = local.vpc_cidr
+  azs             = local.azs
+  public_subnets  = local.public_subnets
+  private_subnets = local.private_subnets
+  environment     = local.env
+}
+
+
+
