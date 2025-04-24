@@ -1,5 +1,5 @@
 name = "my first workflow"
-on:pull
+on:push
 jobs:
   first_jobs:
     runs-on: ubuntu:latest
