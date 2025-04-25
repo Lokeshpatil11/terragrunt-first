@@ -15,3 +15,6 @@ jobs:
 
       - name: Show files
         run: ls -ltr
+      
+      - name: Read file
+        run: cat dragon.txt
