@@ -1,0 +1,16 @@
+name : Genraye ASCII
+
+on: 
+  push
+
+jobs:
+  build_job_1:
+    runs_on: ubuntu-latest
+    setps:
+    - name : Install Cowasay Program
+      run  : sudo apt-get install cowsay -y
+
+    - name : Execute Cowsay CMD
+      run  : cowsay -f dragon "Run for cover, I am a Dragion......" >> dragon.txt
+    - name : Show files
+      run  : ls -ltr 
